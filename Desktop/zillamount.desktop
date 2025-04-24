@@ -1,0 +1,11 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=Zillamount
+Terminal=true
+Exec=/home/$USER/Zillamount/zillamount
+Type=Application
+Icon=/home/$USER/Zillamount/Icon/OIP.jpeg
+
+
+
+
