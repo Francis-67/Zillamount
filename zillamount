@@ -1,0 +1,362 @@
+#!/bin/bash
+
+set -euo pipefail
+IFS=$'\n\t'
+
+cat << "EOF"
+                                                                                                                                                                                         
+	$$$$$$$$\  $$$$$$\      $$$$$$$$\ 
+	$$  _____|$$  __$$\     $$  _____|
+	$$ |      $$ /  $$ |    $$ |      
+	$$$$$\    $$$$$$$$ |    $$$$$\    
+	$$  __|   $$  __$$ |    $$  __|   
+	$$ |      $$ |  $$ |    $$ |      
+	$$ |$$\   $$ |  $$ |$$\ $$ |      
+	\__|\__|  \__|  \__|\__|\__|      
+                                      
+         TESTED ON UBUNTU 24.04 LTS                                                                                                                                                                                                                  
+EOF
+#######################################################################################
+
+
+
+pause(){
+  	read -p ""$HOT_PINK"Complete, Press Enter key to continue..."$RESET"" fackEnterKey
+}
+
+pause2(){
+  	read -p ""$HOT_PINK"Press Enter key to Continue"$RESET"" fackEnterKey
+}
+
+
+########################################################################################
+
+# set text color  Example:  echo ""$RED"M A I N - M E N U"$RESET""
+BLACK=$(tput setaf 0)
+RED=$(tput setaf 1)
+GREEN=$(tput setaf 2)
+YELLOW=$(tput setaf 3)
+LIME_YELLOW=$(tput setaf 190)
+POWDER_BLUE=$(tput setaf 153)
+HOT_PINK=$(tput setaf 200)
+BLUE=$(tput setaf 4)
+MAGENTA=$(tput setaf 5)
+CYAN=$(tput setaf 6)
+WHITE=$(tput setaf 7)
+BRIGHT=$(tput bold)
+#NORMAL=$(tput sgr0)
+BLINK=$(tput blink)
+REVERSE=$(tput smso)
+UNDERLINE=$(tput smul)
+under_line=$(tput sgr 0 1)
+RESET=$(tput sgr 0)
+BOLD=$(tput bold)
+
+########################################################################################
+
+while :
+do
+
+echo ""
+echo ""
+echo "          	~~~~~~~~~~~~~~~~~~~~~"
+echo "            	  "$RED""$BOLD"Z I L L A M O U N T"$RESET""
+echo "               	     "$BLUE"F.F "$BLUE"Ver 13.0"$RESET""
+echo "               	     "$GREEN""$BOLD"THINK "$GREEN"LINUX"$RESET""
+echo "          	~~~~~~~~~~~~~~~~~~~~~"
+echo ""
+echo ""
+
+echo -e "\t1.  "$LIME_YELLOW"Check"$RESET"   Requirements"
+echo -e "\t2.  "$LIME_YELLOW"Execute"$RESET" Image Mount"
+echo -e "\t3.  "$LIME_YELLOW"Execute"$RESET" Create vmdk for Virtual box"
+echo -e "\t99. "$YELLOW"Exit Menu"$RESET""
+echo ""
+echo -n ""$WHITE"Please enter your choice:"$RESET""
+echo ""
+read choice
+case $choice in
+
+################################################################################################################ONE
+#Check requirements dependencies.
+
+	
+
+	"1"|"1")
+	while true; do
+
+	echo ""$GREEN"Partclone, ZSTD and GZIP needs to be installed  in order to create the image. Do they Exist? "$RESET""
+	echo ""
+	touch /tmp/apt.txt
+	apt-cache policy gzip > /tmp/apt.txt
+	apt-cache policy zstd >> /tmp/apt.txt
+	apt-cache policy partclone >> /tmp/apt.txt
+	#Check to see if installed and write to file appended	
+	sleep 1
+	grep -e gzip: -e zstd -e partclone -e Installed: /tmp/apt.txt
+	#Print to screen 
+	echo ""
+	echo ""$GREEN" Are the above requirements installed? "$RESET""
+	echo ""$GREEN" Press Y back to Main Menu, if not press N to install. "$RESET""
+	echo ""$GREEN" "
+	read -n 1 -s userin #Need a user input.
+	echo ""
+	echo ""$YELLOW"You chose" $userin
+
+	if [[ $userin == "N" || $userin == 'n' ]]; then 
+
+	echo ""$GREEN" Partclone, zstd and gzip is being installed. "$RESET""
+
+	sudo apt-get install -y -q gzip &&
+	sudo apt-get install -y -q zstd &&
+	sudo apt-get install -y -q partclone &&
+	#Install requirements	
+	touch /tmp/apt.txt
+
+	echo ""
+	apt-cache policy gzip > /tmp/apt.txt
+	apt-cache policy zstd >> /tmp/apt.txt
+	apt-cache policy partclone >> /tmp/apt.txt
+	#Check install text.
+
+	sleep 1
+	grep -e gzip -e zstd -e partclone -e Installed: /tmp/apt.txt
+	#Print to screen
+	echo ""
+pause2
+
+	elif [[ $userin == "Y" || $userin == 'y' ]]; then
+	echo ""
+	echo ""
+	echo ""$LIME_YELLOW"                           Retured to Main Menu. "$RESET""
+	echo ""
+	echo ""
+	else
+
+	echo ""$RED" Error please press either 'Y' or 'N'... "$RESET"" 
+	continue 
+	# We use continue to loop back to the if & elif statement.	
+	fi
+	break
+	
+pause 
+
+done 
+	
+###################################################################################################################TWO
+#Create img from GZ ZST and mount.
+
+	;;	
+
+	"2"|"2")
+	
+	
+ 	
+	echo ""$GREEN"The Image will be stored in /tmp, is this OK? Yes or No."$RESET""
+	echo ""$GREEN"If you select NO you will be prompted to select a location."$RESET""
+	echo ""$GREEN"Make sure you have enough space."$RESET""
+		
+	read -n 1 userin #Need a user input.
+
+	if [[ $userin == "N" || $userin == 'n' ]]; then 
+	echo ""	
+	echo ""$GREEN"Select the path where you want to store the image file that will be created."$RESET""
+	echo ""$GREEN"Example: /home/user/myimages, then press enter."$RESET""
+	echo ""
+	imagelocation=$(zenity --file-selection --title="Select the directory" --directory 2>/dev/null) 
+	#Supress error message from GTK /dev/null
+	echo ""$LIME_YELLOW"You chose:  $imagelocation."$RESET""
+	echo ""
+
+	elif [[ $userin == "Y" || $userin == 'y' ]]; then
+	echo ""
+	echo ""$LIME_YELLOW"The Image will be stored at:   /tmp."$RESET""
+	echo ""
+	imagelocation="/tmp"
+	
+	else 
+	echo ""$RED" Error please press either 'Y' or 'N'... "$RESET"" 
+
+	continue # We use continue to loop back 
+		break
+	fi
+	
+
+	echo ""$GREEN"Enter a name you want to call the image, then press Enter."$RESET""
+	read -p "Enter Name:" imagename  
+	echo ""$LIME_YELLOW"You chose:  $imagename."$RESET""
+
+	touch /tmp/clonefile.txt
+	touch /tmp/clonefile1.txt
+	touch /tmp/clonefile2.txt
+	
+	#Create file to get info image path, file name and if it .gz or .zst
+
+	echo ""	
+	echo ""$GREEN"Select the file to be restored."$RESET""	
+	clonezillafile=$(zenity --file-selection --title "Select the file"  2>/dev/null)
+	echo ""$LIME_YELLOW"You chose:  $clonezillafile."$RESET"" 
+
+	echo $clonezillafile > /tmp/clonefile.txt &&
+	#writes file selection to file.
+	
+	sed 's/.gz.*/.gz.*/g' /tmp/clonefile.txt --in-place &&
+	sed 's/.zst.*/.zst.*/g' /tmp/clonefile.txt --in-place &&
+	#Removes the suffix from the .gz or .zst and adds wildcard * to txt file.
+
+	sed 's/.*gz.*/gz.*/' /tmp/clonefile.txt > /tmp/clonefile1.txt &&
+	sed 's/.*zst.*/zst.*/' /tmp/clonefile.txt > /tmp/clonefile2.txt &&
+	#If .gz .zst extension is present it stripes off everything before gz.*  it writes it to clonefile 1 2
+
+	
+	clonefilea=$(< /tmp/clonefile.txt)
+	clonefileb=$(< /tmp/clonefile1.txt)
+	clonefilec=$(< /tmp/clonefile2.txt)
+	#Sets up variable based on  files
+
+	#echo "$clonezillafile"
+	#echo 
+	#echo "$clonefilea"
+	#echo 
+	#echo "$clonefileb"
+	#echo 
+	#echo "$clonefilec"
+	#Uncomment for Printing variables for ref.
+
+	compare=gz.*
+	compare1=zst.*
+	#References
+	
+	
+	if [ "$compare" = "$clonefileb" ]; then
+	compare=true
+	echo ""$LIME_YELLOW"GZ compression has been detected."$RESET""
+	echo ""
+	echo "cat $clonefilea | gzip -d -c | sudo partclone. -W -C -I -s - -O $imagelocation/$imagename.img"
+	echo ""
+	cat $clonefilea | gzip -d -c -v | sudo partclone.restore -W -C -I -s - -O $imagelocation/$imagename.img 
+	echo ""
+	
+	
+	elif [ "$compare1" = "$clonefilec" ]; then
+	compare1=true
+	echo ""$LIME_YELLOW"ZST compression has been detected."$RESET""
+	echo ""
+	echo "zstdcat $clonefilea | sudo partclone.restore -W -C -I -s - -O $imagelocation/$imagename.img"
+	echo ""
+	zstdcat $clonefilea | sudo partclone.restore -W -C -I -s - -O $imagelocation/$imagename.img 
+
+
+	else 
+	echo ""
+	echo ""$RED" Error!! GZ or ZST not detected!!! "$RESET""
+	continue
+		break
+	fi
+		
+
+
+	echo ""
+	#mkdir /home/$USER/tmp
+	touch /tmp/loopmount.txt 
+	touch /tmp/loopmount1.txt
+	sudo losetup -f -P --show $imagelocation/$imagename.img > /tmp/loopmount.txt &&
+	#Find first unused device create a partitioned loop device
+	cd /tmp
+	i=0; while read -r line; do test $((++i)) = 1 && echo loop="'$line'" > /tmp/loopmount1.txt; done < /tmp/loopmount.txt && 
+	# variable loop='/dev/loop*' created.
+	source /tmp/loopmount1.txt && 
+	#Its $loop from source file loopmount1.txt
+
+	mkdir -p /tmp/$imagename &&
+	sudo mount $loop /tmp/$imagename &&
+	sleep 5
+	echo ""
+	echo ""$LIME_YELLOW"Your file browser will open to mounted image files. "$RESET""
+	echo ""
+
+
+pause2
+
+
+	nautilus /tmp/$imagename
+	#rm -R -f /home/$USER/tmp
+echo ""
+echo ""
+pause
+echo ""
+
+
+	;;
+###################################################################################################
+
+#Create VMDK from bare metal HD. For Virtual Box.
+
+		
+
+	"3"|"3")
+	
+	
+	echo ""
+	echo "$(tput setaf 3) This will create a vmdk file so Virtual Box"$RESET""
+	echo "$(tput setaf 3)  can boot your physical hardrive. "$RESET""
+
+	echo ""	
+	read -p "Enter the name of vmdk to be created:" vmdkname
+	echo ""
+	echo ""$GREEN"You chose $vmdkname"$RESET""
+	echo ""
+	echo "Next you will select the directory to store the vmdk"
+pause2
+	echo ""
+	store=$(zenity --file-selection --title="Select the directory" --directory 2>/dev/null) #Supress error message from 
+	echo ""$GREEN"You chose $store."$RESET""
+	echo ""
+pause2
+	touch /tmp/lsblk.txt
+	lsblk > /tmp/lsblk.txt
+	grep -e sda -e sdb -e sdc -e sdd -e sde -e nvme0n1 -e nvme0n2 -e nvme0n3: /tmp/lsblk.txt
+	echo ""
+	read -p "Enter the block device of the physical drive: ie sda sdb sdc nvme0n1 etc. SEE ABOVE:"$GREEN" " blkdev
+	echo ""
+	echo ""$GREEN"You chose $blkdev"$RESET""
+	echo ""
+	echo ""$LIME_YELLOW"The following will be executed to create the vmdk!"	
+	echo "VBoxManage createmedium disk --filename=$store/$vmdkname.vmdk --variant=RawDisk --format=VMDK --property RawDrive=/dev/$blkdev"$RESET""
+	echo ""
+pause2
+	sudo VBoxManage createmedium disk --filename=$store/$vmdkname.vmdk --variant=RawDisk --format=VMDK --property RawDrive=/dev/$blkdev &&
+	#VBoxManage internalcommands createrawvmdk -filename $store/$vmdkname.vmdk -rawdisk /dev/$blkdev
+	sudo chown -f $USER:$USER $store/$vmdkname.vmdk &&
+	sudo usermod -a -G disk $USER
+	echo ""
+	echo ""$LIME_YELLOW"The vmdk has been created, now you can use VirtualBox to boot the Hard Disk."
+	echo "File location will open."$RESET""
+	echo ""$RED"WARNING: Windows drives may be written to by chkdisk""$RESET"
+pause
+	echo ""
+	nautilus $store
+	
+
+
+	
+	
+	;;
+
+
+
+
+###################################################################################################
+
+# do something in 99
+
+
+
+       "99"|"99")
+        exit
+        ;;
+            *)
+            echo "Invalid Choice, Please try again"
+            ;;
+    esac
+    done
