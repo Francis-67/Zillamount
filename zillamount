@@ -85,7 +85,7 @@ case $choice in
 	"1"|"1")
 	while true; do
 
-	echo ""$GREEN"Partclone, ZSTD and GZIP needs to be installed  in order to create the image. Do they Exist? "$RESET""
+	echo ""$GREEN" Partclone, ZSTD and GZIP needs to be installed  in order to create the image. Do they Exist? "$RESET""
 	echo ""
 	touch /tmp/apt.txt
 	apt-cache policy gzip > /tmp/apt.txt
@@ -112,16 +112,17 @@ case $choice in
 	sudo apt-get install -y -q partclone &&
 	#Install requirements	
 	touch /tmp/apt.txt
+	#Create file
 
 	echo ""
 	apt-cache policy gzip > /tmp/apt.txt
 	apt-cache policy zstd >> /tmp/apt.txt
 	apt-cache policy partclone >> /tmp/apt.txt
-	#Check install text.
+	#Check install text write and append.
 
 	sleep 1
 	grep -e gzip -e zstd -e partclone -e Installed: /tmp/apt.txt
-	#Print to screen
+	#Print to screen greping apt text.
 	echo ""
 pause2
 
@@ -150,11 +151,12 @@ done
 
 	"2"|"2")
 	
-	
+	while true; do
  	
 	echo ""$GREEN"The Image will be stored in /tmp, is this OK? Yes or No."$RESET""
-	echo ""$GREEN"If you select NO you will be prompted to select a location."$RESET""
+	echo ""$GREEN"If you select NO you will be prompted to select a storage location."$RESET""
 	echo ""$GREEN"Make sure you have enough space."$RESET""
+	echo ""
 		
 	read -n 1 userin #Need a user input.
 
@@ -167,19 +169,24 @@ done
 	#Supress error message from GTK /dev/null
 	echo ""$LIME_YELLOW"You chose:  $imagelocation."$RESET""
 	echo ""
+	break 
 
 	elif [[ $userin == "Y" || $userin == 'y' ]]; then
 	echo ""
 	echo ""$LIME_YELLOW"The Image will be stored at:   /tmp."$RESET""
 	echo ""
 	imagelocation="/tmp"
+	break
 	
 	else 
 	echo ""$RED" Error please press either 'Y' or 'N'... "$RESET"" 
 
 	continue # We use continue to loop back 
-		break
+		break 
 	fi
+	done 
+	 
+
 	
 
 	echo ""$GREEN"Enter a name you want to call the image, then press Enter."$RESET""
@@ -189,8 +196,9 @@ done
 	touch /tmp/clonefile.txt
 	touch /tmp/clonefile1.txt
 	touch /tmp/clonefile2.txt
-	
 	#Create file to get info image path, file name and if it .gz or .zst
+
+	while true; do
 
 	echo ""	
 	echo ""$GREEN"Select the file to be restored."$RESET""	
@@ -221,13 +229,14 @@ done
 	#echo "$clonefileb"
 	#echo 
 	#echo "$clonefilec"
-	#Uncomment for Printing variables for ref.
+	#Uncomment for Printing variables to screen for ref.
+
+	
 
 	compare=gz.*
 	compare1=zst.*
 	#References
-	
-	
+
 	if [ "$compare" = "$clonefileb" ]; then
 	compare=true
 	echo ""$LIME_YELLOW"GZ compression has been detected."$RESET""
@@ -236,6 +245,7 @@ done
 	echo ""
 	cat $clonefilea | gzip -d -c -v | sudo partclone.restore -W -C -I -s - -O $imagelocation/$imagename.img 
 	echo ""
+	break 
 	
 	
 	elif [ "$compare1" = "$clonefilec" ]; then
@@ -245,16 +255,18 @@ done
 	echo "zstdcat $clonefilea | sudo partclone.restore -W -C -I -s - -O $imagelocation/$imagename.img"
 	echo ""
 	zstdcat $clonefilea | sudo partclone.restore -W -C -I -s - -O $imagelocation/$imagename.img 
-
+	break
 
 	else 
 	echo ""
 	echo ""$RED" Error!! GZ or ZST not detected!!! "$RESET""
 	continue
+	#If either of the compression methods are not detected it will dump you to Main menu.
 		break
 	fi
-		
+done 
 
+ 
 
 	echo ""
 	#mkdir /home/$USER/tmp
@@ -283,6 +295,7 @@ pause2
 	#rm -R -f /home/$USER/tmp
 echo ""
 echo ""
+sleep 1
 pause
 echo ""
 
